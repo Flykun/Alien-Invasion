@@ -23,3 +23,5 @@ class Settings():
 
         # 飞船设置
         self.ship_speed_factor = 1.5
+        self.ship_limit = 3
+
