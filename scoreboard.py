@@ -1,4 +1,7 @@
 import pygame.font
+from pygame.sprite import Group
+
+from ship import Ship
 
 
 class Scoreboard():
@@ -18,6 +21,8 @@ class Scoreboard():
         # 准备包含最高得分和当前得分的图像
         self.prep_score()
         self.prep_high_score()
+        self.prep_level()
+        self.prep_ships()
 
     def prep_score(self):
         """将得分渲染为图像"""
@@ -28,7 +33,7 @@ class Scoreboard():
 
         # 将得分放在屏幕右上角
         self.score_rect = self.score_image.get_rect()
-        self.screen_rect.right = self.screen_rect.right - 20
+        self.score_rect.right = self.screen_rect.right - 20
         self.score_rect.top = 20
 
     def prep_high_score(self):
@@ -44,7 +49,30 @@ class Scoreboard():
         self.high_score_rect.centerx = self.screen_rect.centerx
         self.high_score_rect.top = self.score_rect.top
 
+    def prep_level(self):
+        """将等级转换为渲染的图像"""
+        self.level_image = self.font.render(str(self.stats.level), True,
+                                            self.text_color,
+                                            self.ai_settings.bg_color)
+
+        # 将等级放在得分下面
+        self.level_rect = self.level_image.get_rect()
+        self.level_rect.right = self.score_rect.right
+        self.level_rect.top = self.score_rect.bottom + 10
+
+    def prep_ships(self):
+        """显示还剩下多少飞船"""
+        self.ships = Group()
+        for ship_number in range(self.stats.ships_left):
+            ship = Ship(self.ai_settings, self.screen)
+            ship.rect.x = 10 + ship_number * ship.rect.width
+            ship.rect.y = 10
+            self.ships.add(ship)
+
     def show_score(self):
-        """在屏幕显示得分"""
+        """在屏幕显示飞船和得分"""
         self.screen.blit(self.score_image, self.score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
+        self.screen.blit(self.level_image, self.level_rect)
+        # 绘制飞船
+        self.ships.draw(self.screen)
